@@ -1,0 +1,21 @@
+# Binaries and object files
+toy
+*.o
+*.out
+*.ll
+*.s
+*.bc
+
+# Build directories and generated cmake files
+build/
+bin/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+
+# IDE / Editor files
+.vscode/
+.idea/
+*.swp
+*~
+compile_commands.json
