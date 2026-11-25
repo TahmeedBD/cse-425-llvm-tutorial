@@ -1,82 +1,52 @@
-# LLVM Kaleidoscope Tutorial Setup
+# LLVM Kaleidoscope Tutorial
 
-This repository is configured for following the official [LLVM Tutorial: Implementing a Language with LLVM](https://llvm.org/docs/tutorial/MyFirstLanguageFrontend/index.html).
+This project follows the [LLVM Kaleidoscope tutorial](https://llvm.org/docs/tutorial/MyFirstLanguageFrontend/index.html) while developing a reusable language implementation. See the [language design specification](docs/LANGUAGE_DESIGN.md) and [Chapter 1 implementation notes](docs/CHAPTER_01.md).
 
----
+## Current milestone: Chapter 1 — Lexer
 
-## Environment & Installed Tools
+The executable currently tokenizes input and reports lexical diagnostics. It does not parse, evaluate, or generate LLVM IR yet.
 
-- **Compiler**: Clang / Clang++ 21 (`clang++`)
-- **LLVM Libraries & Config**: LLVM 21 (`llvm-config`)
-- **Build Systems**: `make`, `cmake`, `ninja`
-- **Debuggers**: `lldb`, `gdb`
-- **Formatter**: `clang-format` (LLVM style via `.clang-format`)
+### Build and test
 
----
+The intended WSL toolchain uses Clang/LLVM 21, CMake, Ninja and clang-format. Chapter 1 requires only C++17 and a standard library supporting floating-point std::from_chars.
 
-## Code Formatting
-
-You can format your C++ code at any time using:
-
-```bash
-# Format all source files in the project
-make format
-
-# Or directly with clang-format
-clang-format -i toy.cpp
+```sh
+make CXX=clang++
+make test CXX=clang++
 ```
 
----
+Or use CMake:
 
-## How to Build & Run
-
-### Chapter 1 & 2: Lexer and Parser (Pure C++)
-In Chapters 1 and 2, LLVM libraries are not required. You can compile your `toy.cpp` using:
-
-```bash
-# Direct clang++ compilation
-clang++ -g -O3 toy.cpp -o toy
-
-# Or using Makefile
-make
-
-# Run
-./toy
-```
-
-### Chapter 3: Code Generation to LLVM IR
-Starting in Chapter 3, `toy.cpp` includes LLVM headers and generates LLVM IR:
-
-```bash
-# Direct command from the LLVM tutorial
-clang++ -g -O3 toy.cpp $(llvm-config --cxxflags --ldflags --system-libs --libs core) -o toy
-
-# Or using Makefile
-make llvm-ch3
-
-# Run
-./toy
-```
-
-### Chapter 4+: JIT & Optimizer
-In Chapter 4 and beyond, OrcJIT and native machine targets are added:
-
-```bash
-# Direct command
-clang++ -g -O3 toy.cpp $(llvm-config --cxxflags --ldflags --system-libs --libs core orcjit native) -o toy
-
-# Or using Makefile
-make llvm-ch4
-
-# Run
-./toy
-```
-
-### Using CMake (Optional)
-If you prefer CMake:
-
-```bash
-cmake -B build -G Ninja
+```sh
+cmake -S . -B build -G Ninja
 cmake --build build
-./build/toy
+ctest --test-dir build --output-on-failure
 ```
+
+### Run
+
+```sh
+printf 'function square(x)\n    return x * 2.5e-3 // comment\n' | ./toy
+./toy path/to/source
+```
+
+Without a file argument, the driver reads standard input until EOF. It prints token kinds, lexemes and source positions. Lexical errors produce diagnostics and a nonzero exit status.
+
+### Formatting
+
+```sh
+make format
+```
+
+The existing .clang-format defines LLVM style, two-space indentation and an 80-column limit.
+
+### Subsequent chapters
+
+The Makefile retains llvm-ch3 and llvm-ch4 targets for later LLVM linking. CMake can enable the LLVM libraries with -DTOY_WITH_LLVM=ON when needed. Those targets are not needed for the current chapter.
+
+## Structure
+
+- toy.cpp — command-line driver
+- src/lexer.h and src/lexer.cpp — token data and lexical analysis
+- tests/lexer_test.cpp — regression tests
+- docs/ — project design and milestone notes

@@ -31,6 +31,7 @@ The keywords MUST, SHOULD and MAY distinguish committed requirements, preferred 
 - Blocks MUST be indentation-sensitive. Curly braces are not block delimiters.
 - The preferred initial layout is four spaces per indentation level; tabs in indentation are rejected.
 - A colon introduces an indented block. A logical newline ends a statement unless the grammar permits continuation (e.g. within parentheses or brackets). No mandatory semicolons in the target language.
+- Comments use C conventions: `//` to end of line, `/* ... */` for non-nested block comments. No hash comments.
 - The lexer should emit NEWLINE, INDENT and DEDENT tokens for significant layout. Blank and comment-only lines do not change indentation. Dedents must match an established indentation level.
 - Identifier, comment, Unicode and multiline continuation policies beyond these initial rules remain to be specified.
 
@@ -39,10 +40,10 @@ The keywords MUST, SHOULD and MAY distinguish committed requirements, preferred 
 The target language uses one function declaration form, with explicit types and an explicit return arrow:
 
 ```text
-fn square(x: int) -> int:
+function square(x: int) -> int:
     return x * x
 
-fn average(a: float, b: float) -> float:
+function average(a: float, b: float) -> float:
     return (a + b) / 2.0
 
 let threshold: int = 10
@@ -63,11 +64,11 @@ let threshold: int = 10
 - Trapping, nontermination and future explicitly non-returning operations are not normal returns. Their exact typing and control-flow rules are deferred.
 
 ```text
-fn greet(name: string) -> unit:
+function greet(name: string) -> unit:
     print("Hello, " + name)
     return ()
 
-fn eligible(age: int, score: float) -> bool:
+function eligible(age: int, score: float) -> bool:
     return age >= 18 and score >= 75.0
 ```
 
@@ -98,7 +99,7 @@ Numeric values are a deliberate exception to strict type separation. Retain sepa
 - Integer and floating-point operands MUST interoperate for the supported arithmetic operations and numeric comparisons.
 - For mixed arithmetic, promote the integer operand to float; do not silently narrow floats to integers.
 - Integer-only addition, subtraction and multiplication produce int; floating-point and mixed arithmetic produce float.
-- Proposed division rule: `/` produces float, including integer/integer division; `//` is explicit integer division (proposed truncation toward zero, with integer operands only).
+- Proposed division rule: `/` produces float, including integer/integer division. A distinct integer-division spelling is deferred; `//` is reserved for comments.
 - A numeric expression's result type follows from the operator and operands, not from a dynamically changing variable type.
 - Boolean values are not integers. Conditions require bool.
 - String concatenation with other strings is permitted; arithmetic between strings and numbers is rejected. Formatting and explicit conversions may be added later.
@@ -109,7 +110,6 @@ Numeric values are a deliberate exception to strict type separation. Retain sepa
 | 5 + 3 | int: 8 |
 | 5 + 3.5 | float: 8.5 |
 | 5 / 2 | float: 2.5 |
-| 5 // 2 | int: 2 |
 | 5 > 3.5 | bool: true |
 | true + 5 | Type error |
 | "5" + 3 | Type error |
@@ -128,7 +128,7 @@ The initial Kaleidoscope-compatible milestone may retain its double-only semanti
 Illustrative conditional-expression syntax (subject to grammar work):
 
 ```text
-fn absolute(x: int) -> int:
+function absolute(x: int) -> int:
     let magnitude: int = if x >= 0:
         x
     else:
@@ -149,7 +149,7 @@ struct Point:
     x: float
     y: float
 
-fn squared_length(p: Point) -> float:
+function squared_length(p: Point) -> float:
     return p.x * p.x + p.y * p.y
 ```
 
@@ -210,7 +210,7 @@ Requirements for a reusable foundation:
 
 Implement the assigned Kaleidoscope tutorial, using the existing repository and preserving recognizable tutorial functionality and theory. Establish a working lexer, parser, AST, IR generation and the subsequent required tutorial features. Improve internal organization and diagnostics where practical.
 
-Keep the tutorial-compatible behavior independently runnable and testable; tag the exact submission snapshot. Any extensions must not silently replace required tutorial functionality. Confirm the permitted scope with the course staff. The academic report is a separate, independently authored account of the actual implementation and understanding, not this design specification.
+Keep a recognizable tutorial-derived baseline independently runnable and testable; tag the exact submission snapshot. The Chapter 1 deviations (including omission of `extern`) are documented in [Chapter 1 implementation notes](CHAPTER_01.md). Confirm the permitted scope and any required compatibility mechanisms with course staff. The academic report is a separate, independently authored account of the actual implementation and understanding, not this design specification.
 
 ### Milestone B — Target language frontend
 
