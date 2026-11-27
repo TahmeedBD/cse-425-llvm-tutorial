@@ -65,8 +65,11 @@ char Lexer::advance() {
 }
 
 Token Lexer::make(TokenKind kind, SourceLocation start) const {
-  return {kind, source_.substr(start.offset, cursor_.offset - start.offset),
-          start, 0.0, {}};
+  return {kind,
+          source_.substr(start.offset, cursor_.offset - start.offset),
+          start,
+          0.0,
+          {}};
 }
 
 Token Lexer::error(SourceLocation start, const char *message) const {

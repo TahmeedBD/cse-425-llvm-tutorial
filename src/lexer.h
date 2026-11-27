@@ -6,7 +6,15 @@
 
 namespace toy {
 
-enum class TokenKind { Eof, Function, Return, Identifier, Number, Symbol, Error };
+enum class TokenKind {
+  Eof,
+  Function,
+  Return,
+  Identifier,
+  Number,
+  Symbol,
+  Error
+};
 
 struct SourceLocation {
   std::size_t offset = 0;
@@ -18,7 +26,7 @@ struct Token {
   TokenKind kind;
   std::string lexeme;
   SourceLocation location;
-  double number = 0.0; // Meaningful only for Number.
+  double number = 0.0;    // Meaningful only for Number.
   std::string diagnostic; // Meaningful only for Error.
 };
 
